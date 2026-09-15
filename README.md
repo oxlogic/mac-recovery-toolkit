@@ -6,6 +6,12 @@
 
 A truly universal, future-proof, architecture-aware (Intel & Apple Silicon) macOS repair, hardware diagnostics, emergency pre-wipe data backup, automated OS deployment, and bootable USB creation suite. Fully operational in both **Live macOS (Desktop)** with Native AppleScript GUI and **macOS Recovery Mode** with an enterprise CLI terminal menu.
 
+<p align="center">
+  <img src="assets/mac_toolkit_gui.jpg" alt="OxLogic Mac Recovery Toolkit Native macOS GUI" width="800">
+  <br>
+  <em>Figure 1: Native AppleScript Cocoa GUI Dialog Suite on macOS (Apple Silicon & Intel)</em>
+</p>
+
 > [!CAUTION]
 > ### ⚠️ Legal Disclaimer & Limitation of Liability
 > This software is provided **"AS IS"**, without warranty of any kind, express or implied. Disk formatting, partition management, NVRAM resetting, and OS deployment carry inherent risks of permanent data loss or hardware corruption. In no event shall the authors, contributors, or copyright holders (**Md Tazmir**, **OxLogic**) be liable for any claim, damages, data loss, hardware damage, business interruption, or financial loss arising from the use, misuse, or inability to use this toolkit. **Always verify and back up critical data before proceeding. You use this toolkit entirely at your own risk.**

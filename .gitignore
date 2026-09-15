@@ -5,6 +5,7 @@ bakup/
 .DS_Store
 stitch_mac_repair_enterprise_suite/
 *.tmp
+*.zip
 
 # Antigravity & AI Agent Planning Artifacts
 implementation_plan.md
