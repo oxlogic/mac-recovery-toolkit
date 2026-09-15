@@ -6,6 +6,10 @@
 
 A truly universal, future-proof, architecture-aware (Intel & Apple Silicon) macOS repair, hardware diagnostics, emergency pre-wipe data backup, automated OS deployment, and bootable USB creation suite. Fully operational in both **Live macOS (Desktop)** with Native AppleScript GUI and **macOS Recovery Mode** with an enterprise CLI terminal menu.
 
+> [!CAUTION]
+> ### ⚠️ Legal Disclaimer & Limitation of Liability
+> This software is provided **"AS IS"**, without warranty of any kind, express or implied. Disk formatting, partition management, NVRAM resetting, and OS deployment carry inherent risks of permanent data loss or hardware corruption. In no event shall the authors, contributors, or copyright holders (**Md Tazmir**, **OxLogic**) be liable for any claim, damages, data loss, hardware damage, business interruption, or financial loss arising from the use, misuse, or inability to use this toolkit. **Always verify and back up critical data before proceeding. You use this toolkit entirely at your own risk.**
+
 [English Documentation](#-english-documentation) | [বাংলা ডকুমেন্টেশন](#-বাংলা-ডকুমেন্টেশন)
 
 ---
@@ -132,6 +136,10 @@ Creating a bootable macOS USB installer traditionally requires memorizing long, 
 ---
 
 # 🇧🇩 বাংলা ডকুমেন্টেশন
+
+> [!CAUTION]
+> ### ⚠️ আইনি দায়মুক্তি ও সতর্কতা (Legal Disclaimer & Zero Liability)
+> এই সফটওয়্যারটি সম্পূর্ণভাবে **"AS IS"** (যেভাবে আছে সেভাবে) সরবরাহ করা হয়েছে। ডিস্ক ফরম্যাটিং, ড্রাইভ পার্টিশন, ওএস ডিপ্লয়মেন্ট এবং সিস্টেম রিকভারি অত্যন্ত স্পর্শকাতর ও ঝুঁকিপূর্ণ টেকনিক্যাল কাজ। এই টুল বা স্ক্রিপ্ট ব্যবহারের ফলে কোনো ধরনের **ডেটা লস (Data Loss), হার্ডওয়্যার ড্যামেজ, সিস্টেম ক্র্যাশ বা আর্থিক ক্ষতির জন্য মূল ডেভেলপার (Md Tazmir) কিংবা OxLogic কোনোভাবেই দায়ী থাকবে না।** ব্যবহারকারী সম্পূর্ণ নিজ দায়িত্বে ও নিজ ঝুঁকিতে এটি ব্যবহার করবেন। যেকোনো ড্রাইভ ফরম্যাট করার আগে অবশ্যই প্রয়োজনীয় ডেটা ব্যাকআপ নিশ্চিত করুন।
 
 ## 🚀 দ্রুত ব্যবহারের নির্দেশিকা
 
