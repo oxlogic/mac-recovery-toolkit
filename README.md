@@ -71,7 +71,16 @@ bash /Volumes/*/mac_recovery_toolkit.sh
 | **7. Create Bootable USB** | **(Live Mac)** 100% Dynamic - Auto-detects ANY macOS version (OS X Mavericks 10.9 to Sequoia 15, Tahoe 26, Golden Gate 27 & beyond). |
 | **8. Security & Utilities** | Check SIP status (`csrutil`), reset Intel NVRAM (`nvram -c`), toggle verbose boot (`-v`), and check `bputil`. |
 | **9. Switch Mode** | Switch between Native AppleScript GUI and Terminal CLI on demand. |
-| **10. Exit Suite** | Safe exit and cleanup. |
+| **10. About OxLogic MRTK** | Architecture breakdown, system specifications, author credits, and license. |
+| **11. Exit Suite** | Safe exit and cleanup. |
+
+---
+
+## 🏗️ Hybrid Dual-Engine Architecture
+OxLogic MRTK utilizes an enterprise hybrid design for maximum flexibility:
+* **Interactive Frontend GUI (Live macOS):** In normal macOS desktop mode, users are greeted with intuitive native Cocoa / AppleScript dialogs, lists, and button interfaces. No command memorization required.
+* **Native Darwin Backend:** Behind every button click, the script directly executes verified, low-level macOS commands (`diskutil`, `gpt`, `rsync`, `sntp`, `scselect`, `nvram`, `bputil`, `createinstallmedia`).
+* **Standalone CLI Terminal Mode (macOS Recovery):** In Recovery Mode or Single-User mode where WindowServer is restricted, the script automatically and gracefully runs as a high-speed, interactive terminal menu. Zero external dependencies (no Python, no Homebrew, no third-party binaries needed).
 
 ---
 
@@ -80,7 +89,7 @@ bash /Volumes/*/mac_recovery_toolkit.sh
 Before erasing or re-installing macOS, you can safely extract customer files to an external USB flash drive or external hard drive. This engine works both on a running Mac and in macOS Recovery Mode when macOS cannot boot.
 
 ### 🖥️ Using GUI Mode (Live Mac Desktop):
-1. **Launch Suite:** Run `Launch_Mac_Suite.command` or `universal_mac.sh`.
+1. **Launch Suite:** Double-click `Launch_Mac_Recovery_Toolkit.command` or run `bash mac_recovery_toolkit.sh`.
 2. **Select Module 5:** Click **`5. Emergency User Data Backup (Pre-Wipe Triage)`**.
 3. **Step 1 - Select User:** Click the customer's user account from the list.
 4. **Step 2 - Select Destination Drive:** Select your connected external USB/HDD.
@@ -91,7 +100,7 @@ Before erasing or re-installing macOS, you can safely extract customer files to 
 ### ⌨️ Using CLI Mode (macOS Recovery Mode when Mac won't boot):
 1. Boot Mac into **Recovery Mode** (`Cmd + R` on Intel, hold Power button on Apple Silicon).
 2. Open **Terminal** from menu: **Utilities** ➔ **Terminal**.
-3. Run: `bash /Volumes/*/universal_mac.sh`.
+3. Run: `bash /Volumes/*/mac_recovery_toolkit.sh`.
 4. Choose option **`5`** from the main menu.
 5. **FileVault Password:** If the internal drive is encrypted, type the Mac user login password when prompted to unlock `Macintosh HD - Data`.
 6. Select the user number and target backup USB drive number.
@@ -196,7 +205,16 @@ bash /Volumes/*/mac_recovery_toolkit.sh
 | **7. Create Bootable USB** | **(লাইভ ম্যাক)** ১০০% ডাইনামিক - যেকোনো ওএস (Mavericks থেকে Sequoia, Tahoe, Golden Gate এবং ভবিষ্যতের সমস্ত ওএস)। |
 | **8. Security & Utilities** | SIP স্ট্যাটাস, ইন্টেল ম্যাকের জন্য NVRAM রিসেট এবং ভার্বোজ বুট (-v) টগল। |
 | **9. Switch Mode** | অ্যাপলস্ক্রিপ্ট GUI এবং টার্মিনাল CLI মোডের মধ্যে পরিবর্তন (লাইভ ডায়ালগ ⇄ টার্মিনাল)। |
-| **10. Exit Suite** | কাজ শেষে নিরাপদে টার্মিনাল বা ডায়ালগ উইন্ডো বন্ধ করা। |
+| **10. About OxLogic MRTK** | আর্কিটেকচার পরিচিতি, সিস্টেম স্পেক্স, ডেভেলপার ক্রেডিট ও লাইসেন্স। |
+| **11. Exit Suite** | কাজ শেষে নিরাপদে টার্মিনাল বা ডায়ালগ উইন্ডো বন্ধ করা। |
+
+---
+
+## 🏗️ হাইব্রিড ডুয়াল-ইঞ্জিন আর্কিটেকচার (GUI ও টার্মিনাল সিঙ্ক)
+OxLogic MRTK সম্পূর্ণ ভিন্নধর্মী ও শক্তিশালী হাইব্রিড ডিজাইনে তৈরি:
+* **মাউস-ক্লিকযোগ্য আসল GUI ফ্রন্টএন্ড (Live macOS):** চালু ম্যাক ডেক্সটপে এটি ব্যবহারকারীকে কোনো টার্মিনাল কমান্ড মুখস্থ রাখার ঝামেলা ছাড়াই আসল ম্যাকের পপ-আপ ডায়ালগ, বাটন ও ফাইল ব্রাউজার প্রদান করে।
+* **ব্যাকএন্ড পাওয়ার (Native Terminal Commands):** প্রতিটা বাটনের ক্লিকে ব্যাকগ্রাউন্ডে শতভাগ নিখুঁত ও পরীক্ষিত ম্যাক টার্মিনাল কমান্ড (`diskutil`, `gpt`, `rsync`, `sntp`, `scselect`, `nvram`, `bputil`, `createinstallmedia`) স্বয়ংক্রিয়ভাবে রান করে।
+* **জিরো-ডিপেন্ডেন্সি সরাসরি টার্মিনাল মোড (macOS Recovery):** ম্যাক রিকভারি মোড বা সিঙ্গেল-ইউজার মোডে যখন স্ক্রিনে গ্রাফিক্যাল উইন্ডো তৈরি সম্ভব হয় না, টুলটি স্বয়ংক্রিয়ভাবে একটি দ্রুত ও মেনু-চালিত **টার্মিনাল CLI মোড**-এ চলে যায়। এর জন্য কোনো পাইথন, হোমব্রিউ বা থার্ড-পার্টি ফাইলের দরকার নেই—পেনড্রাইভ থেকেই সরাসরি চলে।
 
 ---
 
@@ -205,7 +223,7 @@ bash /Volumes/*/mac_recovery_toolkit.sh
 ম্যাক ওএস ওয়াইপ, ফরম্যাট বা নতুন করে ডিপ্লয় করার আগে কাস্টমারের অমূল্য ফাইল কোনো ডাটা লস ছাড়া পেনড্রাইভ বা এক্সটার্নাল হার্ডডিস্কে ব্যাকআপ নেওয়ার নিয়ম:
 
 ### 🖥️ GUI মোডে ব্যবহারের নিয়ম (চালু ম্যাক ডেক্সটপ):
-1. **টুল রান করো:** `Launch_Mac_Suite.command` বা `universal_mac.sh` ডাবল-ক্লিক করো।
+1. **টুল রান করো:** `Launch_Mac_Recovery_Toolkit.command` বা `mac_recovery_toolkit.sh` ডাবল-ক্লিক করো।
 2. **মডিউল ৫ সিলেক্ট করো:** মাউস দিয়ে **`5. Emergency User Data Backup (Pre-Wipe Triage)`**-এ ক্লিক করো।
 3. **ইউজার নির্বাচন:** ম্যাকের ইউজার একাউন্টগুলোর তালিকা আসবে (যেমন: `admin`), কাঙ্ক্ষিত ইউজারে ক্লিক করো।
 4. **পেনড্রাইভ নির্বাচন:** ব্যাকআপ সেভ করার জন্য কানেক্টেড এক্সটার্নাল ইউএসবি বা হার্ডডিস্ক সিলেক্ট করো।
@@ -216,7 +234,7 @@ bash /Volumes/*/mac_recovery_toolkit.sh
 ### ⌨️ CLI মোডে ব্যবহারের নিয়ম (রিকভারি মোড - যখন ম্যাক চালু হচ্ছে না):
 1. ম্যাককে **রিকভারি মোডে** বুট করো (ইন্টেল ম্যাকে `Cmd + R`, অ্যাপল সিলিকন M1/M2/M3/M4-এ পাওয়ার বাটন চেপে ধরে রাখো)।
 2. মেনু থেকে টার্মিনাল খোলো: **Utilities** ➔ **Terminal**।
-3. কমান্ড চালাও: `bash /Volumes/*/universal_mac.sh`
+3. কমান্ড চালাও: `bash /Volumes/*/mac_recovery_toolkit.sh`
 4. মেইন মেনু থেকে **`5`** চেপে Enter দাও।
 5. **পাসওয়ার্ড দিয়ে ড্রাইভ আনলক:** যদি কাস্টমারের ড্রাইভ FileVault এনক্রিপ্ট করা থাকে, স্ক্রিনে পাসওয়ার্ড চাইলে ম্যাক লগইন পাসওয়ার্ড দিয়ে Enter চাপো। সাথে সাথে ড্রাইভ আনলক হয়ে যাবে।
 6. ইউজারের নম্বর এবং পেনড্রাইভের নম্বর সিলেক্ট করে দাও।

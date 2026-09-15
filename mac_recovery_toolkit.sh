@@ -1602,6 +1602,53 @@ menu_security() {
     fi
 }
 
+menu_about() {
+    if has_gui; then
+        local about_txt="🍏 OxLogic Mac Recovery Toolkit (MRTK) v1.0.0\n"
+        about_txt+="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        about_txt+="Lead Developer: Md Tazmir (@mdtazmir1)\n"
+        about_txt+="Facebook: https://www.facebook.com/muhammadtazmir\n"
+        about_txt+="Organization: OxLogic (https://github.com/oxlogic)\n"
+        about_txt+="Repository: https://github.com/oxlogic/mac-recovery-toolkit\n\n"
+        about_txt+="⚙️ HYBRID DUAL-ENGINE ARCHITECTURE:\n"
+        about_txt+="• Frontend: Native AppleScript Cocoa Dialogs & Controls\n"
+        about_txt+="• Backend: 100% Native Darwin/Unix Shell Commands\n"
+        about_txt+="• Zero Dependencies: No Python, Homebrew, or External Binaries\n\n"
+        about_txt+="🖥️ DUAL EXECUTION MODES:\n"
+        about_txt+="• Live macOS: 1-Click GUI Window Suite via Launch_Mac_Recovery_Toolkit.command\n"
+        about_txt+="• Recovery Mode: Direct Terminal CLI Menu (Root / Single-User Compatible)\n\n"
+        about_txt+="⚖️ LEGAL DISCLAIMER & LIABILITY:\n"
+        about_txt+="MIT License. Provided 'AS IS'. Md Tazmir & OxLogic assume zero liability for data loss."
+        
+        gui_alert "About OxLogic MRTK" "$about_txt" "note"
+    else
+        safe_clear
+        print_header
+        echo -e "${BOLD}                ABOUT OXLOGIC MRTK & ARCHITECTURE${NC}"
+        echo -e "${CYAN}-----------------------------------------------------------------${NC}"
+        echo -e " ${BOLD}Tool:${NC}         OxLogic Mac Recovery Toolkit (MRTK) v1.0.0"
+        echo -e " ${BOLD}Developer:${NC}    Md Tazmir (@mdtazmir1)"
+        echo -e " ${BOLD}Facebook:${NC}     https://www.facebook.com/muhammadtazmir"
+        echo -e " ${BOLD}Organization:${NC} OxLogic (https://github.com/oxlogic)"
+        echo -e " ${BOLD}Repository:${NC}   https://github.com/oxlogic/mac-recovery-toolkit"
+        echo -e "${CYAN}-----------------------------------------------------------------${NC}"
+        echo -e " ${BOLD}HYBRID ENGINE ARCHITECTURE:${NC}"
+        echo -e " • ${GREEN}Dual-Mode Interface:${NC} Native AppleScript GUI in Live macOS"
+        echo -e "   and 100% Standalone CLI Terminal Menu in macOS Recovery Mode."
+        echo -e " • ${GREEN}Backend Power:${NC} Directly executes native macOS Darwin commands"
+        echo -e "   (diskutil, gpt, rsync, sntp, scselect, nvram, bputil, createinstallmedia)."
+        echo -e " • ${GREEN}Zero Dependencies:${NC} Pure POSIX/Bash. Does NOT require Homebrew,"
+        echo -e "   Python, Node.js, or external binaries. Runs anywhere off USB."
+        echo -e " • ${GREEN}Cross-Architecture:${NC} Native Intel (x86_64) & Apple Silicon (ARM64)."
+        echo -e "${CYAN}-----------------------------------------------------------------${NC}"
+        echo -e " ${YELLOW}LEGAL DISCLAIMER & ZERO LIABILITY:${NC}"
+        echo -e " Licensed under MIT. Provided 'AS IS' without warranty of any kind."
+        echo -e " Md Tazmir & OxLogic assume NO liability for data loss or hardware issues."
+        echo -e "${CYAN}=================================================================${NC}"
+        pause
+    fi
+}
+
 # ------------------------------------------------------------------------------
 # Main Application Loop (GUI First with CLI Fallback)
 # ------------------------------------------------------------------------------
@@ -1611,7 +1658,7 @@ while true; do
     if has_gui; then
         gui_prompt="Model: $MODEL_ID | Arch: $CHIP_PLAIN\nEnvironment: $ENV_PLAIN | OS: $OS_VERSION\n\nChoose an action:"
         main_sel=$(gui_choose_list "OxLogic Mac Recovery Toolkit (MRTK)" "$gui_prompt" \
-            '"1. Hardware Diagnostics & Health (SMART, Battery, Specs)", "2. Network & Wi-Fi Management (Scan, Connect, Ping)", "3. Date & Time Synchronization (Certificate Fix, sntp)", "4. Smart Disk Manager & Format (Safe APFS/JHFS+)", "5. Emergency User Data Backup (Pre-Wipe Triage)", "6. macOS Installer & Deployment (USB Auto-Detect, startosinstall)", "7. Create Bootable USB Installer (Auto-Detect .app, Browse)", "8. Advanced Security & NVRAM (SIP, Verbose Boot, bputil)", "9. Switch to Terminal CLI Mode", "10. Exit Suite"' \
+            '"1. Hardware Diagnostics & Health (SMART, Battery, Specs)", "2. Network & Wi-Fi Management (Scan, Connect, Ping)", "3. Date & Time Synchronization (Certificate Fix, sntp)", "4. Smart Disk Manager & Format (Safe APFS/JHFS+)", "5. Emergency User Data Backup (Pre-Wipe Triage)", "6. macOS Installer & Deployment (USB Auto-Detect, startosinstall)", "7. Create Bootable USB Installer (Auto-Detect .app, Browse)", "8. Advanced Security & NVRAM (SIP, Verbose Boot, bputil)", "9. Switch to Terminal CLI Mode", "10. About OxLogic MRTK & Architecture", "11. Exit Suite"' \
             "5. Emergency User Data Backup (Pre-Wipe Triage)")
 
         [ -z "$main_sel" ] || [ "$main_sel" = "false" ] && break
@@ -1626,7 +1673,8 @@ while true; do
             *"7."*) menu_create_bootable_usb ;;
             *"8."*) menu_security ;;
             *"9."*) FORCE_CLI=1 ;;
-            *"10."*) exit 0 ;;
+            *"10."*) menu_about ;;
+            *"11."*) exit 0 ;;
         esac
     else
         safe_clear
@@ -1642,9 +1690,10 @@ while true; do
         echo -e " ${BOLD}7.${NC} Create Bootable USB Installer  ${CYAN}(Auto-detect .app, Finder Browse)${NC}"
         echo -e " ${BOLD}8.${NC} Advanced Security & NVRAM      ${CYAN}(SIP, NVRAM Reset, Verbose Boot, bputil)${NC}"
         echo -e " ${BOLD}9.${NC} Switch to GUI Mode             ${CYAN}(Return to native dialog windows)${NC}"
-        echo -e " ${BOLD}10.${NC} Exit Suite"
+        echo -e " ${BOLD}10.${NC} About OxLogic MRTK            ${CYAN}(Architecture, Specs, Lead Developer)${NC}"
+        echo -e " ${BOLD}11.${NC} Exit Suite"
         echo -e "${CYAN}=================================================================${NC}"
-        read -rp "Select module (1-10): " main_choice
+        read -rp "Select module (1-11): " main_choice
 
         case $main_choice in
             1) menu_diagnostics ;;
@@ -1664,12 +1713,13 @@ while true; do
                     pause
                 fi
                 ;;
-            10)
-                echo -e "\n${GREEN}Exiting Universal Mac OS Repair & Deployment Suite.${NC}"
+            10) menu_about ;;
+            11)
+                echo -e "\n${GREEN}Exiting OxLogic Mac Recovery Toolkit. Goodbye!${NC}"
                 exit 0
                 ;;
             *)
-                echo -e "${RED}Invalid option. Please enter 1-10.${NC}"
+                echo -e "${RED}Invalid option. Please enter 1-11.${NC}"
                 sleep 1
                 ;;
         esac
