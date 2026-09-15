@@ -1,7 +1,7 @@
 #!/bin/bash
 # ==============================================================================
 # OxLogic Mac Recovery Toolkit (MRTK) v1.0.0
-# Lead Developer: Md Tazmir (@mdtazmir1) | OxLogic Team
+# Lead Developer: Md Tazmir (@mdtazmir1 | https://www.facebook.com/muhammadtazmir) | OxLogic Team
 # Official Repository: https://github.com/oxlogic/mac-recovery-toolkit
 # One-Click Double-Clickable Launcher for macOS Finder
 # ==============================================================================

@@ -1,7 +1,7 @@
 # 🍏 OxLogic Mac Recovery Toolkit (MRTK)
 
 > **Official Repository:** [github.com/oxlogic/mac-recovery-toolkit](https://github.com/oxlogic/mac-recovery-toolkit)  
-> **Lead Developer:** Md Tazmir ([@mdtazmir1](https://github.com/mdtazmir1)) | **Organization:** [OxLogic](https://github.com/oxlogic)  
+> **Lead Developer:** Md Tazmir ([GitHub](https://github.com/mdtazmir1) | [Facebook](https://www.facebook.com/muhammadtazmir)) | **Organization:** [OxLogic](https://github.com/oxlogic)  
 > **License:** MIT License (Free for Technicians, Attribution Required)
 
 A truly universal, future-proof, architecture-aware (Intel & Apple Silicon) macOS repair, hardware diagnostics, emergency pre-wipe data backup, automated OS deployment, and bootable USB creation suite. Fully operational in both **Live macOS (Desktop)** with Native AppleScript GUI and **macOS Recovery Mode** with an enterprise CLI terminal menu.
@@ -248,3 +248,12 @@ bash /Volumes/*/mac_recovery_toolkit.sh
 ## ⚠️ ইউনিভার্সাল ফাইল সিস্টেম ফরম্যাট রুলস
 * **Format APFS (Option 2):** macOS High Sierra (10.13) থেকে শুরু করে **ভবিষ্যতের সমস্ত আধুনিক ওএস (Mojave, Catalina, Big Sur, Monterey, Ventura, Sonoma, Sequoia, Tahoe, Golden Gate এবং তার পরের সমস্ত ওএস)**। কারণ আধুনিক ম্যাক ওএসে অ্যাপল Signed System Volume (SSV) এবং APFS স্ন্যাপশট ছাড়া বুট হতে দেয় না।
 * **Format JHFS+ / Journaled (Option 3):** শুধুমাত্র পুরোনো লিগ্যাসি ওএস (Sierra 10.12, El Capitan 10.11, Yosemite 10.10, Mavericks 10.9) অথবা সাধারণ এক্সটার্নাল স্টোরেজ ড্রাইভের জন্য।
+
+---
+
+## 👨‍💻 লেখক ও কমিউনিটি (Author & Community)
+* **মূল নির্মাতা (Lead Developer):** [Md Tazmir](https://www.facebook.com/muhammadtazmir)
+* **গিটহাব প্রোফাইল:** [@mdtazmir1](https://github.com/mdtazmir1)
+* **অফিসিয়াল অর্গানাইজেশন:** [OxLogic](https://github.com/oxlogic)
+* **ফেসবুক যোগাযোগ:** [fb.com/muhammadtazmir](https://www.facebook.com/muhammadtazmir)
+* **লাইসেন্স:** MIT License (সবার জন্য ফ্রি ও উন্মুক্ত)

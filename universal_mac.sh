@@ -1,7 +1,7 @@
 #!/bin/bash
 # ==============================================================================
 # OxLogic Mac Recovery Toolkit (MRTK) v1.0.0
-# Lead Developer: Md Tazmir (@mdtazmir1) | OxLogic Team
+# Lead Developer: Md Tazmir (@mdtazmir1 | https://www.facebook.com/muhammadtazmir) | OxLogic Team
 # Official Repository: https://github.com/oxlogic/mac-recovery-toolkit
 # Hybrid Architecture: Native AppleScript GUI Frontend + Powerful CLI Backend
 # Supports Intel (x86_64) & Apple Silicon (ARM64) in Recovery, Live & Single-User
