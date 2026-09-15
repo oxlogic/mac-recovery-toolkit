@@ -88,6 +88,12 @@ OxLogic MRTK utilizes an enterprise hybrid design for maximum flexibility:
 * **Native Darwin Backend:** Behind every button click, the script directly executes verified, low-level macOS commands (`diskutil`, `gpt`, `rsync`, `sntp`, `scselect`, `nvram`, `bputil`, `createinstallmedia`).
 * **Standalone CLI Terminal Mode (macOS Recovery):** In Recovery Mode or Single-User mode where WindowServer is restricted, the script automatically and gracefully runs as a high-speed, interactive terminal menu. Zero external dependencies (no Python, no Homebrew, no third-party binaries needed).
 
+<p align="center">
+  <img src="assets/mac_terminal_cli.jpg" alt="OxLogic Mac Recovery Toolkit Terminal CLI Mode in macOS Recovery" width="800">
+  <br>
+  <em>Figure 2: Standalone Zero-Dependency Terminal CLI Mode running in macOS Recovery</em>
+</p>
+
 ---
 
 ## 🛡️ Complete Guide: How to Use Module 5 (Emergency User Data Backup)
@@ -221,6 +227,12 @@ OxLogic MRTK সম্পূর্ণ ভিন্নধর্মী ও শক�
 * **মাউস-ক্লিকযোগ্য আসল GUI ফ্রন্টএন্ড (Live macOS):** চালু ম্যাক ডেক্সটপে এটি ব্যবহারকারীকে কোনো টার্মিনাল কমান্ড মুখস্থ রাখার ঝামেলা ছাড়াই আসল ম্যাকের পপ-আপ ডায়ালগ, বাটন ও ফাইল ব্রাউজার প্রদান করে।
 * **ব্যাকএন্ড পাওয়ার (Native Terminal Commands):** প্রতিটা বাটনের ক্লিকে ব্যাকগ্রাউন্ডে শতভাগ নিখুঁত ও পরীক্ষিত ম্যাক টার্মিনাল কমান্ড (`diskutil`, `gpt`, `rsync`, `sntp`, `scselect`, `nvram`, `bputil`, `createinstallmedia`) স্বয়ংক্রিয়ভাবে রান করে।
 * **জিরো-ডিপেন্ডেন্সি সরাসরি টার্মিনাল মোড (macOS Recovery):** ম্যাক রিকভারি মোড বা সিঙ্গেল-ইউজার মোডে যখন স্ক্রিনে গ্রাফিক্যাল উইন্ডো তৈরি সম্ভব হয় না, টুলটি স্বয়ংক্রিয়ভাবে একটি দ্রুত ও মেনু-চালিত **টার্মিনাল CLI মোড**-এ চলে যায়। এর জন্য কোনো পাইথন, হোমব্রিউ বা থার্ড-পার্টি ফাইলের দরকার নেই—পেনড্রাইভ থেকেই সরাসরি চলে।
+
+<p align="center">
+  <img src="assets/mac_terminal_cli.jpg" alt="OxLogic Mac Recovery Toolkit Terminal CLI Mode in macOS Recovery" width="800">
+  <br>
+  <em>চিত্র ২: ম্যাক রিকভারি মোডে টার্মিনাল সিএলআই ইন্টারফেস (Terminal CLI Mode)</em>
+</p>
 
 ---
 
