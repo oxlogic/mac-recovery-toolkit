@@ -1,0 +1,7 @@
+# Git ignore rules for Mac Recovery Toolkit
+bakup/
+*- Copy.*
+*.log
+.DS_Store
+stitch_mac_repair_enterprise_suite/
+*.tmp
