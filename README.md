@@ -3,7 +3,7 @@
 > **Official Repository:** [github.com/oxlogic/mac-recovery-toolkit](https://github.com/oxlogic/mac-recovery-toolkit)  
 > **Lead Developer:** Md Tazmir ([GitHub](https://github.com/mdtazmir1) | [Facebook](https://www.facebook.com/muhammadtazmir)) | **Organization:** [OxLogic](https://github.com/oxlogic)  
 > **License:** MIT License (Free for Technicians, Attribution Required)  
-> **Support Project:** [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-orange?style=flat-square&logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/itbd44s)
+> **Support Project:** [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-orange?style=flat-square&logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/mdtazmir)
 
 A truly universal, future-proof, architecture-aware (Intel & Apple Silicon) macOS repair, hardware diagnostics, emergency pre-wipe data backup, automated OS deployment, and bootable USB creation suite. Fully operational in both **Live macOS (Desktop)** with Native AppleScript GUI and **macOS Recovery Mode** with an enterprise CLI terminal menu.
 
@@ -160,12 +160,12 @@ Creating a bootable macOS USB installer traditionally requires memorizing long, 
 If OxLogic Mac Recovery Toolkit helped you recover valuable customer data, fix an unbootable Mac, or saved you hours of technician time, consider supporting this open-source project:
 
 <p align="left">
-  <a href="https://buymeacoffee.com/itbd44s" target="_blank">
+  <a href="https://buymeacoffee.com/mdtazmir" target="_blank">
     <img src="https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate%20%26%20Support-orange?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white" alt="Buy Me A Coffee">
   </a>
 </p>
 
-* **Buy Me a Coffee:** [buymeacoffee.com/itbd44s](https://buymeacoffee.com/itbd44s)
+* **Buy Me a Coffee:** [buymeacoffee.com/mdtazmir](https://buymeacoffee.com/mdtazmir)
 * **Accepted Payment Methods:** Apple Pay, Google Pay, Visa, Mastercard, American Express.
 
 ---
@@ -323,10 +323,10 @@ OxLogic MRTK সম্পূর্ণ ভিন্নধর্মী ও শক�
 OxLogic Mac Recovery Toolkit যদি আপনার কাস্টমারের মূল্যবান ডেটা ফিরিয়ে আনতে, নষ্ট ম্যাকবুক মেরামত করতে বা কাজের সময় বাঁচাতে সাহায্য করে থাকে, তবে এই ফ্রি ওপেন সোর্স প্রজেক্টটির ভবিষ্যৎ ডেভেলপমেন্ট এগিয়ে নিতে ডেভেলপারকে একটি কফি স্পনসর করতে পারেন:
 
 <p align="left">
-  <a href="https://buymeacoffee.com/itbd44s" target="_blank">
+  <a href="https://buymeacoffee.com/mdtazmir" target="_blank">
     <img src="https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate%20%26%20Support-orange?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white" alt="Buy Me A Coffee">
   </a>
 </p>
 
-* **অফিসিয়াল ডোনেশন লিংক:** [buymeacoffee.com/itbd44s](https://buymeacoffee.com/itbd44s)
+* **অফিসিয়াল ডোনেশন লিংক:** [buymeacoffee.com/mdtazmir](https://buymeacoffee.com/mdtazmir)
 * **পেমেন্ট মেথড:** যেকোনো আন্তর্জাতিক ডেবিট/ক্রেডিট কার্ড (Visa, Mastercard, Amex), Apple Pay ও Google Pay সাপোর্ট করে।
