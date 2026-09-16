@@ -1001,14 +1001,18 @@ get_backup_target_volumes() {
                 local info
                 info=$(diskutil info "$part_id" 2>/dev/null)
                 local mpoint
-                mpoint=$(echo "$info" | grep "Mount Point:" | awk -F': *' '{print $2}')
+                mpoint=$(echo "$info" | grep -E "^ *Mount Point:" | awk -F': *' '{print $2}' | xargs)
+                
+                # Extract clean size strings, e.g., "61.5 GB" instead of "61.5 GB (61523034112 Bytes) (exactly 120162176 512-Byte-Units)"
                 local total_sz
-                total_sz=$(echo "$info" | awk -F': *' '/Disk Size/{print $2}')
+                total_sz=$(echo "$info" | awk -F': *' '/Total Size|Disk Size/{print $2}' | sed -E 's/ *\(.*//' | xargs)
                 local free_sz
-                free_sz=$(echo "$info" | awk -F': *' '/Volume Free Space|Free Space/{print $2}')
+                free_sz=$(echo "$info" | awk -F': *' '/Volume Free Space|Free Space|Available Space/{print $2}' | sed -E 's/ *\(.*//' | xargs)
+                
                 local vname
-                vname=$(echo "$info" | grep "Volume Name:" | awk -F': *' '{print $2}')
+                vname=$(echo "$info" | grep -E "^ *Volume Name:" | awk -F': *' '{print $2}' | xargs)
                 [ -z "$vname" ] && vname="Untitled"
+                [ -z "$free_sz" ] && free_sz="Unknown"
 
                 if [ -n "$mpoint" ] && [ -d "$mpoint" ] && [ "$mpoint" != "/" ]; then
                     candidates+=("$mpoint|$vname ($total_sz, Free: $free_sz)")
