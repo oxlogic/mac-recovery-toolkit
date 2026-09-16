@@ -498,7 +498,7 @@ smart_disk_selector_gui() {
         local is_internal media_name total_size
         is_internal=$(echo "$info" | grep -E "Device Location|Internal" | head -n 1 | awk -F': *' '{print $2}')
         media_name=$(echo "$info" | grep -E "Device / Media Name|Media Name" | head -n 1 | awk -F': *' '{print $2}')
-        total_size=$(echo "$info" | awk -F': *' '/Total Size|Disk Size/{print $2}' | sed -E 's/ *\(.*//' | xargs)
+        total_size=$(echo "$info" | awk -F': *' '/Total Size|Disk Size/{print $2}' | sed -E 's/ *\(.*//' | sed -E 's/^[ \t]*//;s/[ \t]*$//')
 
         local label=""
         if [[ "$is_internal" =~ (Yes|Internal) ]]; then
@@ -540,7 +540,7 @@ smart_disk_selector_cli() {
         local is_internal media_name total_size
         is_internal=$(echo "$info" | grep -E "Device Location|Internal" | head -n 1 | awk -F': *' '{print $2}')
         media_name=$(echo "$info" | grep -E "Device / Media Name|Media Name" | head -n 1 | awk -F': *' '{print $2}')
-        total_size=$(echo "$info" | awk -F': *' '/Total Size|Disk Size/{print $2}' | sed -E 's/ *\(.*//' | xargs)
+        total_size=$(echo "$info" | awk -F': *' '/Total Size|Disk Size/{print $2}' | sed -E 's/ *\(.*//' | sed -E 's/^[ \t]*//;s/[ \t]*$//')
 
         if [[ "$is_internal" =~ (Yes|Internal) ]]; then
             echo -e "  ${BOLD}[$idx]${NC} $d - ${BOLD}$total_size${NC} ($media_name) ${GREEN}[INTERNAL SSD - TARGET]${NC}"
@@ -1009,16 +1009,16 @@ get_backup_target_volumes() {
                 local info
                 info=$(diskutil info "$part_id" 2>/dev/null)
                 local mpoint
-                mpoint=$(echo "$info" | grep -E "^ *Mount Point:" | awk -F': *' '{print $2}' | xargs)
+                mpoint=$(echo "$info" | grep -E "^ *Mount Point:" | awk -F': *' '{print $2}' | sed -E 's/^[ \t]*//;s/[ \t]*$//')
                 
                 # Extract clean size strings, e.g., "61.5 GB" instead of "61.5 GB (61523034112 Bytes) (exactly 120162176 512-Byte-Units)"
                 local total_sz
-                total_sz=$(echo "$info" | awk -F': *' '/Total Size|Disk Size/{print $2}' | sed -E 's/ *\(.*//' | xargs)
+                total_sz=$(echo "$info" | awk -F': *' '/Total Size|Disk Size/{print $2}' | sed -E 's/ *\(.*//' | sed -E 's/^[ \t]*//;s/[ \t]*$//')
                 local free_sz
-                free_sz=$(echo "$info" | awk -F': *' '/Volume Free Space|Free Space|Available Space/{print $2}' | sed -E 's/ *\(.*//' | xargs)
+                free_sz=$(echo "$info" | awk -F': *' '/Volume Free Space|Free Space|Available Space/{print $2}' | sed -E 's/ *\(.*//' | sed -E 's/^[ \t]*//;s/[ \t]*$//')
                 
                 local vname
-                vname=$(echo "$info" | grep -E "^ *Volume Name:" | awk -F': *' '{print $2}' | xargs)
+                vname=$(echo "$info" | grep -E "^ *Volume Name:" | awk -F': *' '{print $2}' | sed -E 's/^[ \t]*//;s/[ \t]*$//')
                 [ -z "$vname" ] && vname="Untitled"
                 [ -z "$free_sz" ] && free_sz="Unknown"
 
