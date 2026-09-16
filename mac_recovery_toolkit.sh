@@ -578,6 +578,13 @@ execute_disk_format() {
     local dsk_info is_internal
     dsk_info=$(diskutil info "$target_dsk" 2>/dev/null)
     is_internal=$(echo "$dsk_info" | grep -E "Device Location|Internal" | head -n 1 | awk -F': *' '{print $2}')
+    
+    local os_ver
+    os_ver=$(sw_vers -productVersion 2>/dev/null || echo "10.99")
+    local is_legacy=false
+    if [[ "$os_ver" =~ ^10\.1[0-2]\. ]] || [[ "$os_ver" =~ ^10\.[0-9]\. ]]; then
+        is_legacy=true
+    fi
 
     if has_gui; then
         if [[ ! "$is_internal" =~ (Yes|Internal) ]]; then
@@ -586,14 +593,33 @@ execute_disk_format() {
             fi
         fi
 
+        if [ "$is_legacy" = true ] && [ "$f_type" = "APFS" ]; then
+            if ! gui_confirm "Legacy OS Detected" "macOS $os_ver (Sierra or older) has limited or no support for APFS. Formatting as APFS will likely fail.\n\nIt is strongly recommended to use JHFS+ (Mac OS Extended) instead.\n\nProceed with APFS anyway?" "caution" "Proceed" "Cancel"; then
+                return 1
+            fi
+        fi
+
         if gui_confirm "Confirm Erase & Format" "All data on /dev/$target_dsk will be PERMANENTLY ERASED.\n\nFormat: $f_type\nVolume Name: $vol_name\n\nAre you sure you want to proceed?" "caution" "Erase Disk" "Cancel"; then
+            # Force unmount before erasing to prevent legacy -69877 errors on active APFS containers
+            diskutil unmountDisk force "/dev/$target_dsk" >/dev/null 2>&1
+            
             diskutil eraseDisk "$f_type" "$vol_name" "/dev/$target_dsk" >/tmp/format.log 2>&1
             if [ $? -eq 0 ]; then
                 gui_alert "Format Successful" "Disk /dev/$target_dsk successfully formatted as $f_type ('$vol_name')." "note"
             else
                 local err_log
                 err_log=$(tail -n 6 /tmp/format.log)
-                gui_alert "Format Failed" "Error formatting /dev/$target_dsk:\n\n$err_log" "stop"
+                if [[ "$err_log" =~ "-69877" ]] || [[ "$err_log" =~ "Couldn't open device" ]] || [[ "$err_log" =~ "Formatting is not supported" ]]; then
+                    # Fallback to partitionDisk for stubborn legacy unmount issues
+                    diskutil partitionDisk "/dev/$target_dsk" 1 GPT "$f_type" "$vol_name" R >/tmp/format_fallback.log 2>&1
+                    if [ $? -eq 0 ]; then
+                        gui_alert "Format Successful (Fallback Method)" "Disk /dev/$target_dsk successfully formatted as $f_type ('$vol_name') using forced partition wipe." "note"
+                        return 0
+                    else
+                        err_log=$(tail -n 6 /tmp/format_fallback.log)
+                    fi
+                fi
+                gui_alert "Format Failed" "Error formatting /dev/$target_dsk:\n\n$err_log\n\nTip: Ensure no background processes are locking the drive." "stop"
             fi
         fi
     else
@@ -603,9 +629,37 @@ execute_disk_format() {
             [ "$ext_c" != "ERASE-EXTERNAL" ] && return 1
         fi
 
+        if [ "$is_legacy" = true ] && [ "$f_type" = "APFS" ]; then
+            echo -e "\n${YELLOW}${BOLD}WARNING: macOS $os_ver (Sierra or older) has limited/no support for APFS.${NC}"
+            echo -e "Formatting as APFS will likely fail. JHFS+ is highly recommended."
+            if ! confirm_action "Proceed with APFS formatting anyway?"; then
+                return 1
+            fi
+        fi
+
         if confirm_action "Entire disk /dev/$target_dsk will be WIPED and formatted as $f_type ('$vol_name')."; then
-            diskutil eraseDisk "$f_type" "$vol_name" "/dev/$target_dsk"
-            echo -e "\n${GREEN}$f_type Format completed.${NC}"
+            echo -e "${CYAN}Forcing unmount of /dev/$target_dsk...${NC}"
+            diskutil unmountDisk force "/dev/$target_dsk" >/dev/null 2>&1
+            
+            diskutil eraseDisk "$f_type" "$vol_name" "/dev/$target_dsk" >/tmp/format.log 2>&1
+            if [ $? -eq 0 ]; then
+                echo -e "\n${GREEN}$f_type Format completed.${NC}"
+            else
+                local err_log
+                err_log=$(tail -n 6 /tmp/format.log)
+                if [[ "$err_log" =~ "-69877" ]] || [[ "$err_log" =~ "Couldn't open device" ]] || [[ "$err_log" =~ "Formatting is not supported" ]]; then
+                    echo -e "${YELLOW}Standard erase failed. Attempting forced partition wipe (legacy fallback)...${NC}"
+                    diskutil partitionDisk "/dev/$target_dsk" 1 GPT "$f_type" "$vol_name" R >/tmp/format_fallback.log 2>&1
+                    if [ $? -eq 0 ]; then
+                        echo -e "\n${GREEN}$f_type Format completed (using partition fallback).${NC}"
+                        return 0
+                    else
+                        err_log=$(tail -n 6 /tmp/format_fallback.log)
+                    fi
+                fi
+                echo -e "\n${RED}Format Failed. Error details:${NC}"
+                echo "$err_log"
+            fi
         fi
     fi
 }
@@ -736,8 +790,18 @@ menu_disks() {
                     apfs_id=$(gui_input "Delete APFS Volume Group" "Enter APFS Volume Group or identifier to delete (e.g. disk3s1):" "")
                     if [ -n "$apfs_id" ]; then
                         if gui_confirm "Delete APFS Volume Group" "CAUTION: Deleting volume groups on Apple Silicon without care can destroy 1TR Recovery.\n\nPermanently delete /dev/$apfs_id?" "stop" "Delete" "Cancel"; then
-                            diskutil apfs deleteVolumeGroup "$apfs_id" >/dev/null 2>&1
-                            gui_alert "APFS Volume Group" "Volume Group deleted." "note"
+                            diskutil apfs deleteVolumeGroup "$apfs_id" >/tmp/apfs_del.log 2>&1
+                            if [ $? -eq 0 ]; then
+                                gui_alert "APFS Volume Group" "Volume Group deleted." "note"
+                            else
+                                local err
+                                err=$(cat /tmp/apfs_del.log)
+                                if [[ "$err" =~ "did not recognize APFS verb" ]] || [[ "$err" =~ "invalid verb" ]]; then
+                                    gui_alert "Legacy OS Detected" "This macOS version is too old to use 'deleteVolumeGroup'. Format the entire disk as JHFS+ instead, or use macOS High Sierra or newer." "stop"
+                                else
+                                    gui_alert "Error" "$err" "stop"
+                                fi
+                            fi
                         fi
                     fi
                     ;;
@@ -791,7 +855,18 @@ menu_disks() {
                     diskutil apfs list
                     read -rp "Enter APFS identifier to delete (e.g. disk3s1): " apfs_target
                     if [ -n "$apfs_target" ] && confirm_action "Delete APFS Volume Group on /dev/$apfs_target?"; then
-                        diskutil apfs deleteVolumeGroup "$apfs_target"
+                        diskutil apfs deleteVolumeGroup "$apfs_target" >/tmp/apfs_del.log 2>&1
+                        if [ $? -eq 0 ]; then
+                            echo -e "${GREEN}Volume Group deleted.${NC}"
+                        else
+                            local err
+                            err=$(cat /tmp/apfs_del.log)
+                            if [[ "$err" =~ "did not recognize APFS verb" ]] || [[ "$err" =~ "invalid verb" ]]; then
+                                echo -e "\n${RED}Legacy OS Detected: This macOS version is too old to use 'deleteVolumeGroup'. Format the entire disk as JHFS+ instead.${NC}"
+                            else
+                                echo -e "\n${RED}Error: $err${NC}"
+                            fi
+                        fi
                     fi
                     pause
                     ;;
