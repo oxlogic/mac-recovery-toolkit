@@ -498,7 +498,7 @@ smart_disk_selector_gui() {
         local is_internal media_name total_size
         is_internal=$(echo "$info" | grep -E "Device Location|Internal" | head -n 1 | awk -F': *' '{print $2}')
         media_name=$(echo "$info" | grep -E "Device / Media Name|Media Name" | head -n 1 | awk -F': *' '{print $2}')
-        total_size=$(echo "$info" | awk -F': *' '/Disk Size/{print $2}')
+        total_size=$(echo "$info" | awk -F': *' '/Total Size|Disk Size/{print $2}' | sed -E 's/ *\(.*//' | xargs)
 
         local label=""
         if [[ "$is_internal" =~ (Yes|Internal) ]]; then
@@ -540,7 +540,7 @@ smart_disk_selector_cli() {
         local is_internal media_name total_size
         is_internal=$(echo "$info" | grep -E "Device Location|Internal" | head -n 1 | awk -F': *' '{print $2}')
         media_name=$(echo "$info" | grep -E "Device / Media Name|Media Name" | head -n 1 | awk -F': *' '{print $2}')
-        total_size=$(echo "$info" | awk -F': *' '/Disk Size/{print $2}')
+        total_size=$(echo "$info" | awk -F': *' '/Total Size|Disk Size/{print $2}' | sed -E 's/ *\(.*//' | xargs)
 
         if [[ "$is_internal" =~ (Yes|Internal) ]]; then
             echo -e "  ${BOLD}[$idx]${NC} $d - ${BOLD}$total_size${NC} ($media_name) ${GREEN}[INTERNAL SSD - TARGET]${NC}"
@@ -600,8 +600,12 @@ execute_disk_format() {
         fi
 
         if gui_confirm "Confirm Erase & Format" "All data on /dev/$target_dsk will be PERMANENTLY ERASED.\n\nFormat: $f_type\nVolume Name: $vol_name\n\nAre you sure you want to proceed?" "caution" "Erase Disk" "Cancel"; then
-            # Force unmount before erasing to prevent legacy -69877 errors on active APFS containers
-            diskutil unmountDisk force "/dev/$target_dsk" >/dev/null 2>&1
+            # Aggressive unmount: Find and force-unmount any synthesized APFS/CoreStorage containers attached to this physical disk
+            local related_disks
+            related_disks=$(diskutil list "/dev/$target_dsk" 2>/dev/null | grep -o 'disk[0-9]*' | sort -u)
+            for rd in $related_disks; do
+                diskutil unmountDisk force "/dev/$rd" >/dev/null 2>&1
+            done
             
             diskutil eraseDisk "$f_type" "$vol_name" "/dev/$target_dsk" >/tmp/format.log 2>&1
             if [ $? -eq 0 ]; then
@@ -638,8 +642,12 @@ execute_disk_format() {
         fi
 
         if confirm_action "Entire disk /dev/$target_dsk will be WIPED and formatted as $f_type ('$vol_name')."; then
-            echo -e "${CYAN}Forcing unmount of /dev/$target_dsk...${NC}"
-            diskutil unmountDisk force "/dev/$target_dsk" >/dev/null 2>&1
+            echo -e "${CYAN}Forcing unmount of /dev/$target_dsk and all associated containers...${NC}"
+            local related_disks
+            related_disks=$(diskutil list "/dev/$target_dsk" 2>/dev/null | grep -o 'disk[0-9]*' | sort -u)
+            for rd in $related_disks; do
+                diskutil unmountDisk force "/dev/$rd" >/dev/null 2>&1
+            done
             
             diskutil eraseDisk "$f_type" "$vol_name" "/dev/$target_dsk" >/tmp/format.log 2>&1
             if [ $? -eq 0 ]; then
