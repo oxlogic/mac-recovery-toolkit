@@ -1070,7 +1070,7 @@ get_backup_target_volumes() {
                 [ -z "$vname" ] && vname="Untitled"
                 [ -z "$free_sz" ] && free_sz="Unknown"
 
-                if [ -n "$mpoint" ] && [ -d "$mpoint" ] && [ "$mpoint" != "/" ]; then
+                if [ -n "$mpoint" ] && [ -d "$mpoint" ] && [ "$mpoint" != "/" ] && [ -w "$mpoint" ]; then
                     candidates+=("$mpoint|$vname ($total_sz, Free: $free_sz)")
                 fi
             done < <(diskutil list "$ed_id" 2>/dev/null | grep -oE 'disk[0-9]+s[0-9]+')
