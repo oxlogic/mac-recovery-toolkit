@@ -164,12 +164,17 @@ gui_input() {
     local title="$1"
     local prompt="$2"
     local def_txt="$3"
+    local is_pass="${4:-false}"
     local esc_title esc_prompt esc_def
     esc_title=$(gui_escape "$title")
     esc_prompt=$(gui_escape "$prompt")
     esc_def=$(gui_escape "$def_txt")
+    local script="display dialog \"$esc_prompt\" with title \"$esc_title\" default answer \"$esc_def\" buttons {\"Cancel\", \"OK\"} default button \"OK\""
+    if [ "$is_pass" = true ] || [ "$is_pass" = "true" ]; then
+        script="$script with hidden answer"
+    fi
     local res
-    res=$(osascript -e "display dialog \"$esc_prompt\" with title \"$esc_title\" default answer \"$esc_def\" buttons {\"Cancel\", \"OK\"} default button \"OK\"" 2>/dev/null)
+    res=$(osascript -e "$script" 2>/dev/null)
     if [[ "$res" =~ "button returned:OK" ]]; then
         echo "$res" | sed -E 's/.*text returned:(.*)/\1/'
     else
@@ -711,8 +716,11 @@ quick_connect_external_drives() {
             done <<< "$ext_disks"
         fi
 
-        # Also trigger system-wide mount for all unmounted volumes
-        diskutil mount -all >/dev/null 2>&1
+        # Ensure all individual external partitions are mounted
+        local ext_part
+        for ext_part in $(diskutil list external 2>/dev/null | grep -oE 'disk[0-9]+s[0-9]+'); do
+            diskutil mount "$ext_part" >/dev/null 2>&1
+        done
 
         local msg=""
         if [ "$was_hung" = true ]; then
@@ -759,7 +767,10 @@ quick_connect_external_drives() {
             done <<< "$ext_disks"
         fi
 
-        diskutil mount -all >/dev/null 2>&1
+        local ext_part
+        for ext_part in $(diskutil list external 2>/dev/null | grep -oE 'disk[0-9]+s[0-9]+'); do
+            diskutil mount "$ext_part" >/dev/null 2>&1
+        done
 
         echo -e "\n${GREEN}${BOLD}✓ Quick Connect complete!${NC}"
         echo -e "External drives checked. All volumes are now active in /Volumes."
@@ -900,19 +911,8 @@ menu_disks() {
 # Module 5: Emergency User Data Backup Engine (Pre-Wipe Triage)
 # ------------------------------------------------------------------------------
 locate_user_data_root() {
-    # Check if we are in live OS where /Users exists directly
-    if [ -d "/Users" ] && [ "$ENV_TYPE" = "Live macOS" ]; then
-        local user_check
-        user_check=$(ls /Users 2>/dev/null | grep -Ev '^(Shared|Guest|\.localized)$' | head -n 1)
-        if [ -n "$user_check" ]; then
-            echo "/Users"
-            return 0
-        fi
-    fi
-
-locate_user_data_root() {
     # 1. Check if we are in live OS where /Users exists directly
-    if [ -d "/Users" ] && [ "$ENV_TYPE" = "Live macOS" ]; then
+    if [ -d "/Users" ] && [ "$ENV_PLAIN" = "Live macOS" ]; then
         local user_check
         user_check=$(ls /Users 2>/dev/null | grep -Ev '^(Shared|Guest|\.localized|\.DS_Store)$' | head -n 1)
         if [ -n "$user_check" ]; then
@@ -945,7 +945,7 @@ locate_user_data_root() {
 
     # 3. If not found in mounted volumes, inspect APFS volume list
     local apfs_vols
-    apfs_vols=$(diskutil apfs list 2>/dev/null | grep "APFS Volume Disk Identifier:" | awk '{print $NF}')
+    apfs_vols=$(diskutil apfs list 2>/dev/null | grep -oE 'disk[0-9]+s[0-9]+')
     if [ -n "$apfs_vols" ]; then
         local v
         for v in $apfs_vols; do
@@ -976,7 +976,7 @@ unlock_and_mount_internal_volumes() {
 
     # 1. Mount all unmounted internal physical/synthesized partitions (APFS and HFS+)
     local int_parts
-    int_parts=$(diskutil list internal 2>/dev/null | grep -E '^[ ]+[0-9]+:' | awk '{print $NF}')
+    int_parts=$(diskutil list internal 2>/dev/null | grep -oE 'disk[0-9]+s[0-9]+')
     local p
     for p in $int_parts; do
         [ -z "$p" ] && continue
@@ -991,7 +991,7 @@ unlock_and_mount_internal_volumes() {
 
     # 2. Check for locked APFS Volumes
     local apfs_vols
-    apfs_vols=$(diskutil apfs list 2>/dev/null | grep "APFS Volume Disk Identifier:" | awk '{print $NF}')
+    apfs_vols=$(diskutil apfs list 2>/dev/null | grep -oE 'disk[0-9]+s[0-9]+')
     local v
     for v in $apfs_vols; do
         local v_info
@@ -1073,7 +1073,7 @@ get_backup_target_volumes() {
                 if [ -n "$mpoint" ] && [ -d "$mpoint" ] && [ "$mpoint" != "/" ]; then
                     candidates+=("$mpoint|$vname ($total_sz, Free: $free_sz)")
                 fi
-            done < <(diskutil list "$ed_id" 2>/dev/null | grep -E '^ +[0-9]+:' | awk '{print $NF}')
+            done < <(diskutil list "$ed_id" 2>/dev/null | grep -oE 'disk[0-9]+s[0-9]+')
         done
     fi
 
