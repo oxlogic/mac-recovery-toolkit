@@ -910,39 +910,58 @@ locate_user_data_root() {
         fi
     fi
 
-    # In Recovery mode or mounted external/internal partitions:
+locate_user_data_root() {
+    # 1. Check if we are in live OS where /Users exists directly
+    if [ -d "/Users" ] && [ "$ENV_TYPE" = "Live macOS" ]; then
+        local user_check
+        user_check=$(ls /Users 2>/dev/null | grep -Ev '^(Shared|Guest|\.localized|\.DS_Store)$' | head -n 1)
+        if [ -n "$user_check" ]; then
+            echo "/Users"
+            return 0
+        fi
+    fi
+
+    # 2. Universal /Volumes scan: Detect any mounted drive containing actual user profiles
     local d
-    for d in "/Volumes"/*" - Data" "/Volumes/Data" "/Volumes/Macintosh HD/Users"; do
+    for d in /Volumes/*; do
+        [ ! -d "$d" ] && continue
+        local bname
+        bname=$(basename "$d")
+        case "$bname" in
+            "OS X Base System"|"macOS Base System"|"Image Volume"|"Recovery"|"Preboot"|"VM"|"Shared Support"|"Update"|"com.apple."*|".Spotlight"*|".fseventsd"*)
+                continue
+                ;;
+        esac
+
         if [ -d "$d/Users" ]; then
-            echo "$d/Users"
-            return 0
-        elif [ -d "$d" ] && [ "$(basename "$d")" = "Users" ]; then
-            echo "$d"
-            return 0
+            local u_check
+            u_check=$(ls "$d/Users" 2>/dev/null | grep -Ev '^(Shared|Guest|\.localized|\.DS_Store)$' | head -n 1)
+            if [ -n "$u_check" ]; then
+                echo "$d/Users"
+                return 0
+            fi
         fi
     done
 
-    # If not already mounted in /Volumes, inspect APFS volume list for unmounted Data volumes
-    local apfs_data_vols
-    apfs_data_vols=$(diskutil apfs list 2>/dev/null | grep -B 2 -E "Role:.*(Data|None)" | grep "APFS Volume Disk Identifier:" | awk '{print $NF}')
-    if [ -z "$apfs_data_vols" ]; then
-        apfs_data_vols=$(diskutil apfs list 2>/dev/null | grep "APFS Volume Disk Identifier:" | awk '{print $NF}')
-    fi
-
-    if [ -n "$apfs_data_vols" ]; then
+    # 3. If not found in mounted volumes, inspect APFS volume list
+    local apfs_vols
+    apfs_vols=$(diskutil apfs list 2>/dev/null | grep "APFS Volume Disk Identifier:" | awk '{print $NF}')
+    if [ -n "$apfs_vols" ]; then
         local v
-        for v in $apfs_data_vols; do
+        for v in $apfs_vols; do
             local v_info
             v_info=$(diskutil info "$v" 2>/dev/null)
-            local is_mounted
-            is_mounted=$(echo "$v_info" | grep -E "Mounted:.*Yes")
-
-            if [ -n "$is_mounted" ]; then
+            if echo "$v_info" | grep -qE "Mounted:.*Yes"; then
                 local m_point
                 m_point=$(echo "$v_info" | grep "Mount Point:" | awk -F': *' '{print $2}')
-                if [ -d "$m_point/Users" ]; then
-                    echo "$m_point/Users"
-                    return 0
+                m_point=$(echo $m_point)
+                if [ -n "$m_point" ] && [ -d "$m_point/Users" ]; then
+                    local u_check
+                    u_check=$(ls "$m_point/Users" 2>/dev/null | grep -Ev '^(Shared|Guest|\.localized|\.DS_Store)$' | head -n 1)
+                    if [ -n "$u_check" ]; then
+                        echo "$m_point/Users"
+                        return 0
+                    fi
                 fi
             fi
         done
@@ -951,49 +970,69 @@ locate_user_data_root() {
     return 1
 }
 
-unlock_and_mount_apfs_data() {
-    local target_disk_id="$1"
+unlock_and_mount_internal_volumes() {
     local is_gui=false
     has_gui && is_gui=true
 
-    if [ -z "$target_disk_id" ]; then
-        target_disk_id=$(diskutil apfs list 2>/dev/null | grep -B 3 -E "(Role:.*Data|Name:.*Data)" | grep "APFS Volume Disk Identifier:" | head -n 1 | awk '{print $NF}')
-        [ -z "$target_disk_id" ] && target_disk_id=$(diskutil list internal 2>/dev/null | grep "Macintosh HD - Data" | awk '{print $NF}')
-    fi
+    # 1. Mount all unmounted internal physical/synthesized partitions (APFS and HFS+)
+    local int_parts
+    int_parts=$(diskutil list internal 2>/dev/null | grep -E '^[ ]+[0-9]+:' | awk '{print $NF}')
+    local p
+    for p in $int_parts; do
+        [ -z "$p" ] && continue
+        local p_info
+        p_info=$(diskutil info "$p" 2>/dev/null)
+        local is_m
+        is_m=$(echo "$p_info" | grep -E "Mounted:.*Yes")
+        if [ -z "$is_m" ]; then
+            diskutil mount "$p" >/dev/null 2>&1
+        fi
+    done
 
-    [ -z "$target_disk_id" ] && return 1
+    # 2. Check for locked APFS Volumes
+    local apfs_vols
+    apfs_vols=$(diskutil apfs list 2>/dev/null | grep "APFS Volume Disk Identifier:" | awk '{print $NF}')
+    local v
+    for v in $apfs_vols; do
+        local v_info
+        v_info=$(diskutil info "$v" 2>/dev/null)
+        if echo "$v_info" | grep -qE "FileVault:.*Locked|Locked:.*Yes"; then
+            local pass=""
+            if [ "$is_gui" = true ]; then
+                pass=$(gui_input "Encrypted APFS Volume Locked" "The internal drive ($v) is protected by FileVault.\n\nEnter Mac user password to unlock:" "" true)
+            else
+                echo -e "\n${YELLOW}${BOLD}Internal drive ($v) is locked with FileVault (APFS).${NC}"
+                read -s -rp "Enter Mac user login password to unlock: " pass
+                echo ""
+            fi
+            if [ -n "$pass" ]; then
+                printf '%s' "$pass" | diskutil apfs unlockVolume "$v" -stdinpass >/tmp/unlock.log 2>&1
+            fi
+        fi
+    done
 
-    local v_info
-    v_info=$(diskutil info "$target_disk_id" 2>/dev/null)
-    local is_locked
-    is_locked=$(echo "$v_info" | grep -E "FileVault:.*Locked|Locked:.*Yes")
-
-    if [ -n "$is_locked" ]; then
+    # 3. Check for locked legacy CoreStorage Volumes (macOS Yosemite, El Capitan, Sierra HFS+ FileVault)
+    local cs_uuid
+    cs_uuid=$(diskutil cs list 2>/dev/null | grep -B 2 -E "Locked:.*Yes" | grep "Logical Volume" | awk '{print $NF}')
+    if [ -n "$cs_uuid" ]; then
         local pass=""
         if [ "$is_gui" = true ]; then
-            pass=$(gui_input "Encrypted Volume Locked" "The internal drive ($target_disk_id) is protected by FileVault.\n\nEnter the Mac user login password to unlock and access data:" "" true)
+            pass=$(gui_input "Encrypted CoreStorage Volume Locked" "The legacy internal drive ($cs_uuid) is protected by FileVault.\n\nEnter Mac user password to unlock:" "" true)
         else
-            echo -e "\n${YELLOW}${BOLD}Internal drive ($target_disk_id) is locked with FileVault encryption.${NC}"
+            echo -e "\n${YELLOW}${BOLD}Internal drive is locked with FileVault (CoreStorage / HFS+).${NC}"
             read -s -rp "Enter Mac user login password to unlock: " pass
             echo ""
         fi
-
-        [ -z "$pass" ] && return 1
-
-        printf '%s' "$pass" | diskutil apfs unlockVolume "$target_disk_id" -stdinpass >/tmp/unlock.log 2>&1
-        if [ $? -ne 0 ]; then
-            if [ "$is_gui" = true ]; then
-                gui_alert "Unlock Failed" "Incorrect password or failed to unlock volume $target_disk_id.\n\n$(cat /tmp/unlock.log)" "stop"
-            else
-                echo -e "${RED}Failed to unlock $target_disk_id: $(cat /tmp/unlock.log)${NC}"
-            fi
-            return 1
+        if [ -n "$pass" ]; then
+            printf '%s' "$pass" | diskutil cs unlockVolume "$cs_uuid" -stdinpass >/tmp/unlock.log 2>&1
         fi
-    else
-        diskutil mount "$target_disk_id" >/dev/null 2>&1
     fi
 
     return 0
+}
+
+unlock_and_mount_apfs_data() {
+    unlock_and_mount_internal_volumes
 }
 
 get_backup_target_volumes() {
@@ -1124,14 +1163,73 @@ menu_backup_data() {
     fi
 
     if [ -z "$users_root" ] || [ ! -d "$users_root" ]; then
+        local mounted_vols=()
+        local d
+        for d in /Volumes/*; do
+            [ ! -d "$d" ] && continue
+            local bn
+            bn=$(basename "$d")
+            case "$bn" in
+                "OS X Base System"|"macOS Base System"|"Image Volume"|"Recovery"|"Preboot"|"VM"|"Shared Support"|"Update"|"com.apple."*|".Spotlight"*|".fseventsd"*)
+                    continue
+                    ;;
+            esac
+            mounted_vols+=("$d")
+        done
+
         if [ "$is_gui" = true ]; then
-            gui_alert "Data Volume Not Found" "Could not detect an accessible 'Macintosh HD - Data' volume or /Users folder.\n\nIf the internal drive is encrypted, unlock it in Disk Utility first." "stop"
+            if [ ${#mounted_vols[@]} -gt 0 ]; then
+                local vol_summary=""
+                local mv
+                for mv in "${mounted_vols[@]}"; do
+                    vol_summary="$vol_summary• $(basename "$mv") (Empty / No User Profiles)\n"
+                done
+                gui_alert "No User Data Found (Clean Drive)" "The following mounted volume(s) were scanned:\n\n$vol_summary\nNotice: These volumes are completely clean/formatted and contain no macOS user accounts (/Users).\n\nEmergency Data Backup requires an existing macOS installation with user files." "caution"
+            else
+                gui_alert "Data Volume Not Found" "Could not detect an accessible internal volume or /Users folder.\n\nIf the internal drive is encrypted, unlock it in Disk Utility first." "stop"
+            fi
+            return 1
         else
-            echo -e "\n${RED}Error: Could not locate /Users or accessible Macintosh HD - Data volume.${NC}"
-            echo "If the drive has FileVault enabled, unlock it with 'diskutil apfs unlockVolume' first."
-            pause
+            echo -e "\n${BOLD}=================================================================${NC}"
+            echo -e "                   DATA BACKUP DIAGNOSTIC REPORT                 "
+            echo -e "${BOLD}=================================================================${NC}"
+            if [ ${#mounted_vols[@]} -gt 0 ]; then
+                echo -e "${YELLOW}${BOLD}Scanned Volume(s) in /Volumes:${NC}"
+                local mv
+                for mv in "${mounted_vols[@]}"; do
+                    echo -e "  • ${CYAN}$(basename "$mv")${NC} ($mv) -> ${RED}[0 User Accounts - Empty / Clean Formatted]${NC}"
+                done
+                echo -e "\n${YELLOW}${BOLD}CRITICAL NOTICE:${NC}"
+                echo -e "The internal drive is ${BOLD}CLEAN / FRESHLY FORMATTED${NC}."
+                echo -e "There are NO user accounts or /Users folders to back up."
+                echo -e "Data Backup only works on a Mac that has an existing operating system with files."
+            else
+                echo -e "${RED}Error: Could not locate /Users or accessible internal data volume.${NC}"
+                echo -e "If FileVault is enabled, unlock it with Disk Utility or terminal first."
+            fi
+            echo -e "${BOLD}=================================================================${NC}"
+
+            echo -e "\nOptions:"
+            echo -e "  [1] Manually specify a custom folder or volume path"
+            echo -e "  [2] Return to Main Menu"
+            local no_data_choice
+            read -rp "Select option (1-2): " no_data_choice
+            if [ "$no_data_choice" = "1" ]; then
+                local custom_path
+                read -rp "Enter full path (e.g., /Volumes/Macintosh HD): " custom_path
+                if [ -d "$custom_path" ]; then
+                    if [ -d "$custom_path/Users" ]; then
+                        users_root="$custom_path/Users"
+                    else
+                        users_root="$custom_path"
+                    fi
+                else
+                    echo -e "${RED}Invalid directory path.${NC}"; pause; return 1
+                fi
+            else
+                return 1
+            fi
         fi
-        return 1
     fi
 
     # 2. Find valid user accounts

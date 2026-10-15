@@ -17,6 +17,8 @@ echo "Initializing environment..."
 
 if [ -f "$DIR/mac_recovery_toolkit.sh" ]; then
     bash "$DIR/mac_recovery_toolkit.sh"
+elif [ -f "$DIR/app.sh" ]; then
+    bash "$DIR/app.sh"
 elif [ -f "$DIR/universal_mac.sh" ]; then
     bash "$DIR/universal_mac.sh"
 elif [ -f "$DIR/mac.sh" ]; then

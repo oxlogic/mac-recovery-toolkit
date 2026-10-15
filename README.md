@@ -3,7 +3,6 @@
 > **Official Repository:** [github.com/oxlogic/mac-recovery-toolkit](https://github.com/oxlogic/mac-recovery-toolkit)  
 > **Lead Developer:** Md Tazmir ([GitHub](https://github.com/mdtazmir1) | [Facebook](https://www.facebook.com/muhammadtazmir)) | **Organization:** [OxLogic](https://github.com/oxlogic)  
 > **License:** MIT License (Free for Technicians, Attribution Required)  
-> **Support Project:** [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-orange?style=flat-square&logo=buy-me-a-coffee&logoColor=white)](https://buymeacoffee.com/mdtazmir)
 
 A truly universal, future-proof, architecture-aware (Intel & Apple Silicon) macOS repair, hardware diagnostics, emergency pre-wipe data backup, automated OS deployment, and bootable USB creation suite. Fully operational in both **Live macOS (Desktop)** with Native AppleScript GUI and **macOS Recovery Mode** with an enterprise CLI terminal menu.
 
@@ -23,6 +22,14 @@ A truly universal, future-proof, architecture-aware (Intel & Apple Silicon) macO
 
 # 🌐 English Documentation
 
+## 💾 USB Setup & Offline Preparation (Windows / Mac / Linux)
+*Before repairing an unbootable Mac:*
+1. **Download:** Click the green **`Code`** ➔ **`Download ZIP`** button on GitHub (or grab the latest release).
+2. **Copy to USB:** Format any USB Flash Drive as **FAT32** or **ExFAT** and extract the files directly to the root of the USB.
+3. *(Pro Tip for Fast Typing in Recovery):* You can keep the default filename `mac_recovery_toolkit.sh`, or rename it to `app.sh` or `mac.sh` to type fewer characters in the terminal.
+
+---
+
 ## 🚀 Quick Execution Guide
 
 ### 1. Live macOS (Normal Desktop Mode)
@@ -35,7 +42,7 @@ Simply double-click **`Launch_Mac_Recovery_Toolkit.command`** in Finder from you
 #### Method B: Drag & Drop
 1. Open Terminal (`Cmd + Space` ➔ type **Terminal** ➔ press **Enter**).
 2. Type `bash ` (add a trailing space).
-3. Drag and drop the `mac_recovery_toolkit.sh` file into the Terminal window and press **Enter**.
+3. Drag and drop the `mac_recovery_toolkit.sh` (or `app.sh`) file into the Terminal window and press **Enter**.
 
 #### Method C: One-Liner via GitHub (No Download Required)
 ```bash
@@ -59,7 +66,11 @@ From the top menu bar, click: **Utilities** ➔ **Terminal**.
 ```bash
 bash /Volumes/*/mac_recovery_toolkit.sh
 ```
-*(Or if you renamed the script to `mac.sh`: `bash /Volumes/*/mac.sh`)*
+*(Or if you renamed the script to `app.sh` or `mac.sh`: `bash /Volumes/*/app.sh`)*
+
+> [!WARNING]
+> ### 🛑 SPELLING NOTICE: Type `bash`, NOT `base`!
+> The command is **`bash`** (`b-a-s-h`). If you type `base`, the macOS terminal will fail with `-bash: base: command not found`.
 
 > **Note:** Apple restricts window rendering in Recovery root Terminal, so the suite automatically and safely falls back to a clean, menu-driven **CLI Terminal Menu**.
 
@@ -177,6 +188,14 @@ If OxLogic Mac Recovery Toolkit helped you recover valuable customer data, fix a
 > ### ⚠️ আইনি দায়মুক্তি ও সতর্কতা (Legal Disclaimer & Zero Liability)
 > এই সফটওয়্যারটি সম্পূর্ণভাবে **"AS IS"** (যেভাবে আছে সেভাবে) সরবরাহ করা হয়েছে। ডিস্ক ফরম্যাটিং, ড্রাইভ পার্টিশন, ওএস ডিপ্লয়মেন্ট এবং সিস্টেম রিকভারি অত্যন্ত স্পর্শকাতর ও ঝুঁকিপূর্ণ টেকনিক্যাল কাজ। এই টুল বা স্ক্রিপ্ট ব্যবহারের ফলে কোনো ধরনের **ডেটা লস (Data Loss), হার্ডওয়্যার ড্যামেজ, সিস্টেম ক্র্যাশ বা আর্থিক ক্ষতির জন্য মূল ডেভেলপার (Md Tazmir) কিংবা OxLogic কোনোভাবেই দায়ী থাকবে না।** ব্যবহারকারী সম্পূর্ণ নিজ দায়িত্বে ও নিজ ঝুঁকিতে এটি ব্যবহার করবেন। যেকোনো ড্রাইভ ফরম্যাট করার আগে অবশ্যই প্রয়োজনীয় ডেটা ব্যাকআপ নিশ্চিত করুন।
 
+## 💾 পেনড্রাইভ সেটআপ ও অফলাইন প্রস্তুতি (Windows / Mac)
+*নষ্ট বা বন্ধ ম্যাক মেরামত করার আগে:*
+1. **ডাউনলোড:** GitHub-এর সবুজ **`Code`** বাটন ➔ **`Download ZIP`** এ ক্লিক করো (অথবা Releases থেকে জিপ ডাউনলোড করো)।
+2. **পেনড্রাইভে কপি:** একটি পেনড্রাইভকে **FAT32** বা **ExFAT** ফরম্যাটে রেখে জিপের ভেতরের ফাইলগুলো সরাসরি পেনড্রাইভে পেস্ট করো।
+3. *(দ্রুত টাইপ করার টিপস):* ফাইলের নাম `mac_recovery_toolkit.sh` রাখতে পারো, অথবা টার্মিনালে সহজে টাইপ করার সুবিধার জন্য নাম পরিবর্তন করে `app.sh` বা `mac.sh` রেখে দিতে পারো।
+
+---
+
 ## 🚀 দ্রুত ব্যবহারের নির্দেশিকা
 
 ### ১. লাইভ ম্যাক মোড (Live macOS / Desktop Mode)
@@ -189,7 +208,7 @@ If OxLogic Mac Recovery Toolkit helped you recover valuable customer data, fix a
 #### পদ্ধতি ২: সহজ ড্র্যাগ অ্যান্ড ড্রপ পদ্ধতি:
 1. ম্যাকের টার্মিনাল খোলো (`Cmd + Space` চেপে **Terminal** লিখে Enter)।
 2. টার্মিনালে লেখো `bash ` (একটা স্পেস দাও)।
-3. `mac_recovery_toolkit.sh` ফাইলটিকে মাউস দিয়ে টেনে এনে টার্মিনালের ওপর ছেড়ে দাও এবং **Enter** চাপো।
+3. `mac_recovery_toolkit.sh` (বা `app.sh`) ফাইলটিকে মাউস দিয়ে টেনে এনে টার্মিনালের ওপর ছেড়ে দাও এবং **Enter** চাপো।
 
 #### গিটহাব থেকে সরাসরি ১ লাইনে রান (ডাউনলোড ছাড়া):
 ```bash
@@ -213,7 +232,11 @@ curl -sL https://raw.githubusercontent.com/oxlogic/mac-recovery-toolkit/main/mac
 ```bash
 bash /Volumes/*/mac_recovery_toolkit.sh
 ```
-*(অথবা যদি ফাইলের নাম `mac.sh` রেখে থাকো: `bash /Volumes/*/mac.sh`)*
+*(অথবা যদি ফাইলের নাম `app.sh` বা `mac.sh` রেখে থাকো: `bash /Volumes/*/app.sh`)*
+
+> [!WARNING]
+> ### 🛑 বানানের বিশেষ সতর্কতা: টাইপ করবেন `bash`, কখনোই `base` নয়!
+> কমান্ডটি হলো **`bash`** (`b-a-s-h`)। আপনি যদি ভুল করে `base` টাইপ করেন, তবে ম্যাক টার্মিনাল এরর দেবে: `-bash: base: command not found`।
 
 > **নোট:** অ্যাপল রিকভারি মোডে টার্মিনাল থেকে উইন্ডো পপ-আপ ব্লক রাখে, তাই রিকভারিতে টুলটি স্বয়ংক্রিয়ভাবে একটি দ্রুত ও নিরাপদ **টার্মিনাল মেনু (CLI Mode)** হিসেবে চালু হবে।
 
